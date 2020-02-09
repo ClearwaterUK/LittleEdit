@@ -23,11 +23,13 @@ As the software is still in development, both the source code and the program it
 Windows requirements: GNU  MINGW with GCC compilers, Git.
 
 Clone the repository in a command line, navigate to it and type the following: \
+```
 make -B
+```
 
-This will compilea fresh build of the program from the source code.
+This will compile a fresh build of the program from the source code.
 
-Alternatively, visit the release page for a pre-compiled executable.
+Alternatively, visit the [release page](https://github.com/Clearwatersfo/LittleEdit/releases) for a pre-compiled executable.
 
 ## Usage
 
