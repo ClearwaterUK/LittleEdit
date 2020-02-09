@@ -1,3 +1,5 @@
+# IMPORTANT: This readme is currently incomplete and will be subject to change.
+
 # LittleEdit
 A save editor for Littlewood. Currently in development.
 
@@ -14,8 +16,18 @@ With this, you can change or modify variables in the save files to tweak items a
 LittleEdit is currently in active, part-time development.
 The current build is compatible with Littlewood v0.9.
 
+As the software is still in development, both the source code and the program itself is subject to major changes.
+
 ## Setup
 
+Windows requirements: GNU  MINGW with GCC compilers, Git.
+
+Clone the repository in a command line, navigate to it and type the following:
+make -B
+
+This will compilea fresh build of the program from the source code.
+
+Alternatively, visit the release page for a pre-compiled executable.
 
 ## Usage
 
