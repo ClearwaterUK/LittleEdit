@@ -1,7 +1,8 @@
 # LittleEdit
-A save editor for LittleEdit. Currently in development.
+A save editor for Littlewood. Currently in development.
 
 https://github.com/Clearwatersfo/LittleEdit/
+https://store.steampowered.com/app/894940/Littlewood/
 
 ## About
 
