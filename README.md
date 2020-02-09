@@ -3,7 +3,7 @@
 # LittleEdit
 A save editor for Littlewood. Currently in development.
 
-https://github.com/Clearwatersfo/LittleEdit/
+https://github.com/Clearwatersfo/LittleEdit/ \
 https://store.steampowered.com/app/894940/Littlewood/
 
 ## About
@@ -22,7 +22,7 @@ As the software is still in development, both the source code and the program it
 
 Windows requirements: GNU  MINGW with GCC compilers, Git.
 
-Clone the repository in a command line, navigate to it and type the following:
+Clone the repository in a command line, navigate to it and type the following: \
 make -B
 
 This will compilea fresh build of the program from the source code.
