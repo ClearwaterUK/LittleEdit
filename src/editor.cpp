@@ -6,18 +6,15 @@
 // A save editor for LittleWood that allows modification of variables to change amount of Dewdrops, change event flags, etc.
 // **AS THE GAME IS IN EARLY ACCESS, UPDATES TO THE GAME MAY/WILL BREAK THIS SAVE EDITOR UNTIL IT IS UPDATED.
 
-//IMPORTANT NOTE:
-//For changes to the file to be made effective, THE GAME NEEDS TO BE CLOSED. If modifications are made to the original file while the game is running,
-//the game will restore changes from the backup file it generates when a game is loaded, undoing the made changes.
 
-//Get the libraries we need.
+//Get the base libraries we need.
 #include <iostream>
 #include <string>
 #include <cstring>
 #include <fstream>
 
 
-//Import libraries to interface with Windows functions (get working directory, get processes, etc)
+//Import various libraries to interface with Windows functions (get working directory, get processes, etc)
 #include <windows.h>
 
 #include <Lmcons.h>
@@ -27,16 +24,16 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-//Use the standard namespace as we don't need anything from any other namespaces for now
+//Use the standard namespace as we don't need anything from any other namespaces for now.
 using namespace std;
 
 
-//Set any global variables needed.
+// * * * GLOBAL VARIABLES * * *
 bool detectedsaves[2];
 
-//Function declarations begin here.
-//TODO: Organise into groups (Windows interface functions, file functions, etc...)
 
+
+//Function declarations begin here.
 
 // ******************************************************
 // ******************************************************
@@ -104,7 +101,8 @@ class ErrorCodes
 		exit(5);
 	}
 };
-//Initialize the error class straight away.
+
+//Initialize the error class as a global instance straight away.
 ErrorCodes Error;
 
 // ******************************************************
@@ -129,14 +127,11 @@ bool gameIsNotClosed()
             {  
                 HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
 
-                // Do stuff..
-				cout << "Game is running." << endl;
                 CloseHandle(hProcess);
 				return 1;
             }
         }
     }
-	cout << "Game is not running." << endl;
 	return 0;
 }
 
@@ -151,7 +146,6 @@ string getWorkingDir()
 	string workingDir = "C\:\\Users\\";
 	workingDir.append(username);
 	workingDir += "\\AppData\\LocalLow\\SmashGames\\Littlewood";
-	cout << workingDir << endl;
 	
 	return workingDir;
 }
@@ -169,8 +163,6 @@ bool checkWorkingDir(string workingdir)
 	short length = workingdir.length();
 	char lengthchar[length+1];
 	strcpy(lengthchar, workingdir.c_str());
-	
-	cout << lengthchar << endl;
 	
 	char buff[FILENAME_MAX]; //create string buffer to hold path
 	
@@ -279,8 +271,6 @@ short validateSaves()
 	
 }
 
-
-
 //Find the requested tag in the file, and return the starting byte of its data.
 int seekStartingByte(fstream &inputFile, string tagToFind)
 {
@@ -294,10 +284,7 @@ int seekStartingByte(fstream &inputFile, string tagToFind)
 	
 	//Reset stream position to 0 just in case.
 	inputFile.seekg(0,ios::beg);
-	
-	cout << "Seeking data location for " << tagToFind << endl;
-	cout <<  lengthOfTag << endl;
-	
+		
 	while(inputFile.get(extractedChar))
 	{
 		currentByteLocation++;
@@ -315,7 +302,6 @@ int seekStartingByte(fstream &inputFile, string tagToFind)
 		}
 		if (extractedString == tagToFind)
 		{
-			cout << "Tag found at byte" << currentByteLocation+1 << endl;
 			return currentByteLocation+1;
 		}
 	}
@@ -323,6 +309,7 @@ int seekStartingByte(fstream &inputFile, string tagToFind)
 }
 
 
+//Write the new data into the new save file.
 template <typename T>
 int saveContent(fstream &inputFile, string nameOfOldFile, string nameOfTempFile, int startByte, T data, T dataToReplace)
 {
@@ -388,6 +375,10 @@ int saveContent(fstream &inputFile, string nameOfOldFile, string nameOfTempFile,
 	remove(oldFileNameChar);
 	rename(tempFileNameChar,oldFileNameChar);
 	
+	cout << endl;
+	cout << "Done! If you would like to make any further changes, simply run this .exe again." << endl;
+	cout << "DISCLAIMER: THIS PROGRAM IS STILL IN DEVELOPMENT AND IS SUBJECT TO MAJOR CHANGES." << endl;
+	
 	return 0;
 }
 
@@ -411,8 +402,10 @@ void overwritePromptString(fstream &inputFile, string nameOfOldFile, string name
 	}
 	currentDataString.pop_back();
 	
-	cout << "The current [PLACEHOLDER TEXT] is: " << currentDataString << endl;
-	cout << "Enter the new [PLACEHOLDER TEXT]: " << endl;
+	cout << tag;
+	
+	cout << "The current " << tag << " value is: " << currentDataString << endl;
+	cout << "Enter the new " << tag << " : " << endl;
 	
 	cin >> newDataString;
 	
@@ -440,8 +433,8 @@ void overwritePromptInt(fstream &inputFile, string nameOfOldFile, string nameOfT
 	int currentDataInt = stoi(currentDataString);
 	
 	
-	cout << "The current [PLACEHOLDER TEXT] value is: " << currentDataInt << endl;
-	cout << "Enter the new [PLACEHOLDER TEXT] value: " << endl;
+	cout << "The current " << tag << " value is: " << currentDataInt << endl;
+	cout << "Enter the new " << tag << " value: " << endl;
 	
 	cin >> newDataString;
 	
@@ -467,8 +460,8 @@ void overwritePromptBool(fstream &inputFile, string nameOfOldFile, string nameOf
 		currentDataBool += extractedByte;
 	}
 	
-	cout << "The current [PLACEHOLDER TEXT] value is: " << currentDataBool << endl;
-	cout << "Enter the new [PLACEHOLDER TEXT] value (true or False): " << endl;
+	cout << "The current " << tag << " value is: " << currentDataBool << endl;
+	cout << "Enter the new " << tag << " value (true or false): " << endl;
 	
 	cin >> newDataBool;
 	
@@ -513,7 +506,6 @@ void backupFiles(string nameOfOldFile)
 	fileToCopy.insert(fileToCopy.size(),".backup");
 	
 	fstream originalFileStreamBackup(fileToCopy, ios::out | ios::trunc);
-	cout << originalFileStreamBackup.is_open();
 	
 	//...and one for the game-generated backup.
 	fstream originalBackupStream(backupfileToCopy);
@@ -576,15 +568,20 @@ void deleteGameBackupFile(string nameOfOldFile)
 	char nameOfBackupFileChar[nameOfBackupFile.size() + 1];
 	strcpy(nameOfBackupFileChar, nameOfBackupFile.c_str());
 	
-	cout << "Deleting game-generated backup file..." << endl;
+	cout << endl << "Deleting game-generated backup file..." << endl;
 	if (!remove(nameOfBackupFileChar))
 	{
 		cout << "File deleted successfully." << endl;
 	}
 	else
 	{
-		cout << "Failed to delete file!" << endl;
+		cout << "Failed to delete game-generated backup file." << endl;
+		cout << "It's possible the game has not yet created a backup file, in which case you can disregard this warning." << endl;
+		cout << "If the backup file exists, check to see if LittleEdit was launched as an administrator." << endl;
+		cout << "If not, proceed with caution as any attempted changes may not succeed." << endl << endl;
+		system("pause");
 	}
+	system("cls");
 }
 
 void saveModifyTownMenu(fstream &inputFile, string nameOfOldFile, string nameOfTempFile)
@@ -595,10 +592,11 @@ void saveModifyTownMenu(fstream &inputFile, string nameOfOldFile, string nameOfT
 	cout << "1: Rename town title" << endl;
 	cout << "2: Rename town" << endl;
 	cout << "3: Set town beauty level" << endl;
-	cout << "3: Change Tavern current recipe hint" << endl;
-	cout << "4: Set status of Well chest" << endl;
-	cout << "5: Set maximum length of day" << endl;
-	cout << "6: Set current period of day" << endl;
+	cout << "4: Change Tavern current recipe hint" << endl;
+	cout << "5: Set status of Well chest" << endl;
+	cout << "6: Set maximum length of day" << endl;
+	cout << "7: Set current period of day" << endl;
+	
 
 	cout << endl;
 	
@@ -608,6 +606,12 @@ void saveModifyTownMenu(fstream &inputFile, string nameOfOldFile, string nameOfT
 	{
 		case 1: {overwritePromptString(inputFile, nameOfOldFile, nameOfTempFile,"\"title\"\:"); break;}
 		case 2: {overwritePromptString(inputFile, nameOfOldFile, nameOfTempFile, "\"townName\"\:");break;}
+		case 3: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile,"\"townBeautyLvl\"\:"); break;}
+		case 4: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"recipeHintID\"\:");break;}
+		case 5: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile,"\"openedWellChest\"\:"); break;}
+		case 6: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"maxDayEXP\"\:");break;}
+		case 7: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"dayEXP\"\:");break;}
+		
 		default: break;
 	}
 }
@@ -619,17 +623,26 @@ void saveModifyCharMenu(fstream &inputFile, string nameOfOldFile, string nameOfT
 	//Character stuff
 	cout << "1: Rename character" << endl;
 	cout << "2: Player housing wall" << endl;
-	cout << "3: Player housing floor" << endl;
+	cout << "3: Player housing roof" << endl;
 	cout << "4: Set player skin" << endl;
 	cout << "5: Set player hair" << endl;
 	cout << "6: Set player color" << endl;
 	cout << "7: Set player outfit" << endl;
 	cout << "8: Set player style" << endl;
 	
+	cin >> selection;
 	
 	switch(selection)
 	{
 		case 1: {overwritePromptString(inputFile, nameOfOldFile, nameOfTempFile,"\"playerName\"\:"); break;}
+		case 2: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile,"\"playerHouseWall\"\:"); break;}
+		case 3: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile,"\"playerHouseRoof\"\:"); break;}
+		case 4: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile,"\"skin\"\:"); break;}
+		case 5: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile,"\"hair\"\:"); break;}
+		case 6: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile,"\"color\"\:"); break;}
+		case 7: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile,"\"outfit\"\:"); break;}
+		case 8: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile,"\"type\"\:"); break;}
+		
 		default: break;
 	}
 }
@@ -640,6 +653,8 @@ void saveModifyInventoryMenu(fstream &inputFile, string nameOfOldFile, string na
 	
 	//Inventory stuff
 	cout << "1: Modify Dewdrops" << endl;
+	
+	cin >> selection;
 	
 	switch(selection)
 	{
@@ -663,11 +678,32 @@ void saveModifyStatsMenu(fstream &inputFile, string nameOfOldFile, string nameOf
 	cout << "8: Set amount of crops harvested" << endl;
 	cout << "9: Set amount of items crafted" << endl;
 	cout << "10: Set amount of items donated to museum" << endl;
+	cout << "11: Set amount of town wishes made" << endl;
+	cout << "12: Set amount of items sold" << endl;
+	cout << "13: Set amount of Dewdrops earned" << endl;
+	cout << "14: Set amount of structure donations" << endl;
+	cout << "15: Set amount of events experienced" << endl;
 	
+	cin >> selection;
 
 	switch(selection)
 	{
-		case 1: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"steps\"\:");break;}
+		case 1: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"daysPlayed\"\:");break;}
+		case 2: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"steps\"\:");break;}
+		case 3: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"itemsGathered\"\:");break;}
+		case 4: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"oreMined\"\:");break;}
+		case 5: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"treesChopped\"\:");break;}
+		case 6: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"bugsCaught\"\:");break;}
+		case 7: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"fishCaught\"\:");break;}
+		case 8: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"cropsHarvested\"\:");break;}
+		case 9: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"itemsCrafted\"\:");break;}
+		case 10: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"museumDonation\"\:");break;}
+		case 11: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"townWishesMade\"\:");break;}
+		case 12: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"itemsSold\"\:");break;}
+		case 13: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"dewdropsEarned\"\:");break;}
+		case 14: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"structureDonations\"\:");break;}
+		case 15: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"daysPlayed\"\:");break;}
+		
 		default: break;
 	}
 }
@@ -677,14 +713,20 @@ void saveModifyMiscMenu(fstream &inputFile, string nameOfOldFile, string nameOfT
 	short selection;
 	
 	//Misc stuff
-	cout << "1: Set expanded map (NOT WORKING)" << endl;
+	
+	cout << "1: Set current season" << endl;
 	cout << "2: Set current day" << endl;
 	cout << "3: Set current month" << endl;
 	cout << "4: Set current year" << endl;
 
+	cin >> selection;
+	
 	switch(selection)
 	{
-		case 1: {overwritePromptBool(inputFile, nameOfOldFile, nameOfTempFile, "\"expandedMap\"\:");break;}
+		case 1: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"season\"\:");break;}
+		case 2: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"day\"\:");break;}
+		case 3: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"month\"\:");break;}
+		case 4: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"year\"\:");break;}
 		default: break;
 	}
 }
@@ -700,7 +742,7 @@ void saveModifyMainMenu(fstream &inputFile, string nameOfOldFile, string nameOfT
 	short selection;
 	fstream originalFileDumpStream(nameOfTempFile);	//The .tmp file
 	
-	cout << "Select an option: " << endl;
+	cout << "Select a category: " << endl;
 	
 	cout << "1: Town data" << endl;
 	cout << "2: Character data" << endl;
@@ -711,6 +753,7 @@ void saveModifyMainMenu(fstream &inputFile, string nameOfOldFile, string nameOfT
 	
 	cin >> selection;
 	
+	cout << "Select an option: " << endl;
 	switch(selection)
 	{
 		case 1: {saveModifyTownMenu(inputFile, nameOfOldFile, nameOfTempFile); break;}
@@ -761,7 +804,7 @@ void chooseSave(short detectedSaves)
 	default: {cout << "Hmm, shouldn't be seeing this..." << endl; break;}
 	}
 	
-	cout << "Select a save to modify:" << endl;
+	cout << "Select a save to modify: (1-3)" << endl;
 	
 	// Print the available saves depending on what ones were detected.
 	switch(detectedSaves)
@@ -834,6 +877,7 @@ void chooseSave(short detectedSaves)
 	if (!openFileStream.is_open()) {Error.currentFileNotOpen();}
 	
 	//When a file has been chosen, open the main menu.
+	system("cls");
 	saveModifyMainMenu(openFileStream, oldFileName, tempFileName);
 
 }
@@ -858,6 +902,7 @@ void Initialize()
 // ** MAIN ENTRY POINT **
 int main()
 {
+	system("cls");
 	Initialize();
 	return 0;
 }
