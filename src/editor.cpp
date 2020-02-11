@@ -625,7 +625,7 @@ void saveModifyCharMenu(fstream &inputFile, string nameOfOldFile, string nameOfT
 	cout << "2: Player housing wall" << endl;
 	cout << "3: Player housing roof" << endl;
 	cout << "4: Set player skin" << endl;
-	cout << "5: Set player hair" << endl;
+	cout << "5: Set player hair" << endl; //Hair has a max of 6, any further messes up the character sprite
 	cout << "6: Set player color" << endl;
 	cout << "7: Set player outfit" << endl;
 	cout << "8: Set player style" << endl;
@@ -691,18 +691,18 @@ void saveModifyStatsMenu(fstream &inputFile, string nameOfOldFile, string nameOf
 		case 1: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"daysPlayed\"\:");break;}
 		case 2: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"steps\"\:");break;}
 		case 3: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"itemsGathered\"\:");break;}
-		case 4: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"oreMined\"\:");break;}
+		case 4: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"oresMined\"\:");break;}
 		case 5: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"treesChopped\"\:");break;}
 		case 6: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"bugsCaught\"\:");break;}
 		case 7: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"fishCaught\"\:");break;}
 		case 8: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"cropsHarvested\"\:");break;}
 		case 9: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"itemsCrafted\"\:");break;}
-		case 10: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"museumDonation\"\:");break;}
+		case 10: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"museumDonations\"\:");break;}
 		case 11: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"townWishesMade\"\:");break;}
 		case 12: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"itemsSold\"\:");break;}
 		case 13: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"dewdropsEarned\"\:");break;}
 		case 14: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"structureDonations\"\:");break;}
-		case 15: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"daysPlayed\"\:");break;}
+		case 15: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"eventsExperienced\"\:");break;}
 		
 		default: break;
 	}
@@ -714,19 +714,17 @@ void saveModifyMiscMenu(fstream &inputFile, string nameOfOldFile, string nameOfT
 	
 	//Misc stuff
 	
-	cout << "1: Set current season" << endl;
-	cout << "2: Set current day" << endl;
-	cout << "3: Set current month" << endl;
-	cout << "4: Set current year" << endl;
+	cout << "1: Set current day" << endl;
+	cout << "2: Set current season" << endl;
+	cout << "3: Set current year" << endl;
 
 	cin >> selection;
 	
 	switch(selection)
 	{
-		case 1: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"season\"\:");break;}
-		case 2: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"day\"\:");break;}
-		case 3: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"month\"\:");break;}
-		case 4: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"year\"\:");break;}
+		case 1: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"day\"\:");break;}
+		case 2: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"season\"\:");break;}
+		case 3: {overwritePromptInt(inputFile, nameOfOldFile, nameOfTempFile, "\"year\"\:");break;}
 		default: break;
 	}
 }
