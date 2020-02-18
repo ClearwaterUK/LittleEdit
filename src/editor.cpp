@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#include <sstream>
 #include <fstream>
 #include <map>
 
@@ -30,6 +31,8 @@ using namespace std;
 
 // * * * GLOBAL VARIABLES * * *
 bool detectedsaves[2];
+	map<string,int> tags_with_limits;
+	map<string,int>::iterator it;
 
 //Initalize the map. More tags will be added throughout development.
 
@@ -421,10 +424,13 @@ void overwritePromptString(fstream &inputFile, string nameOfOldFile, string name
 short getInputLimit(string tag)
 {
 	//Create the maps that will hold tags with limits, and their respective max limits.
-	map<string,int> tags_with_limits;
-	map<string,int>::iterator it;
 	
-	tags_with_limits["\"hair\"\:"] = 6;
+	tags_with_limits["\"skin\"\:"] = 3;
+	tags_with_limits["\"hair\"\:"] = 7;
+	tags_with_limits["\"color\"\:"] = 7;
+	tags_with_limits["\"outfit\"\:"] = 7;
+	tags_with_limits["\"type\"\:"] = 8;
+	
 	tags_with_limits["\"playerName\"\:"] = 10;
 	
 	it = tags_with_limits.find(tag);
@@ -441,9 +447,73 @@ short getInputLimit(string tag)
 	}
 }
 
+//Checks to see if a tag has a list of contents we can choose from.
+bool checkTagPrompt(string tagToCheck)
+{
+	if (tagToCheck == "\"skin\"\:")
+	{
+		cout << "Select an option from the list to apply:" << endl << endl;
+		cout << "1: Ivory" << endl;
+		cout << "2: Honey" << endl;
+		cout << "3: Chestnut" << endl;
+		return 1;
+	}
+	else if (tagToCheck == "\"hair\"\:")
+	{
+		cout << "Select an option from the list to apply:" << endl << endl;
+		cout << "1: Short" << endl;
+		cout << "2: Long" << endl;
+		cout << "3: Hero" << endl;
+		cout << "4: Wavy" << endl;
+		cout << "5: Fuzz" << endl;
+		cout << "6: Ponytail" << endl;
+		cout << "7: Smooth" << endl;
+		return 1;
+	}
+	else if (tagToCheck == "\"color\"\:")
+	{
+		cout << "Select an option from the list to apply:" << endl << endl;
+		cout << "1: Cedar" << endl;
+		cout << "2: Onyx" << endl;
+		cout << "3: Lemon" << endl;
+		cout << "4: Ruby" << endl;
+		cout << "5: Ocean" << endl;
+		cout << "6: Emerald" << endl;
+		cout << "7: Bubblegum" << endl;
+		return 1;
+	}
+	else if (tagToCheck == "\"outfit\"\:")
+	{
+		cout << "Select an option from the list to apply:" << endl << endl;
+		cout << "1: Overalls" << endl;
+		cout << "2: Farmhand" << endl;
+		cout << "3: Wizard" << endl;
+		cout << "4: Grayscale" << endl;
+		cout << "5: Lilac" << endl;
+		cout << "6: Adventurer" << endl;
+		cout << "7: Peasant" << endl;
+		return 1;
+	}
+	else if (tagToCheck == "\"type\"\:")
+	{
+		cout << "Select an option from the list to apply:" << endl << endl;
+		cout << "1: Curious" << endl;
+		cout << "2: Kind" << endl;
+		cout << "3: Naughty" << endl;
+		cout << "4: Creative" << endl;
+		cout << "5: Friendly" << endl;
+		cout << "6: Sassy" << endl;
+		cout << "7: Pirate" << endl;
+		cout << "8: Bookworm" << endl;
+		return 1;
+	}
+	else {return 0;}
+}
+
 void overwritePromptInt(fstream &inputFile, string nameOfOldFile, string nameOfTempFile, string tag)
 {
 	//Some tags have a max limit to their size. During input we need to enforce a limit as to how big input can be.
+	bool menuPromptFlag = 1;
 	
 	string tagToFind = tag;
 	string currentDataString, newDataString;
@@ -461,9 +531,14 @@ void overwritePromptInt(fstream &inputFile, string nameOfOldFile, string nameOfT
 	
 	int currentDataInt = stoi(currentDataString);
 	
-	
-	cout << "The current " << tag << " value is: " << currentDataInt << endl;
-	cout << "Enter the new " << tag << " value: " << endl;
+
+	//Check if the selected tag has a specific menu to choose from.
+	if (!(checkTagPrompt(tag)))
+	{
+		cout << "The current " << tag << " value is: " << currentDataInt << endl;
+		cout << "Enter the new " << tag << " value: " << endl;
+		menuPromptFlag = 0;
+	}
 	
 	cin >> newDataString;
 	
@@ -473,6 +548,16 @@ void overwritePromptInt(fstream &inputFile, string nameOfOldFile, string nameOfT
 		{
 			cout << "Over limit!" << endl;
 		}
+	}
+	
+	if (menuPromptFlag)
+	{
+		stringstream strstream;
+		short toConvert = stoi(newDataString);
+		toConvert--;
+		strstream << toConvert;
+		newDataString = strstream.str();
+		
 	}
 	
 	newDataString.append("\,\"");
@@ -661,11 +746,11 @@ void saveModifyCharMenu(fstream &inputFile, string nameOfOldFile, string nameOfT
 	cout << "1: Rename character" << endl;
 	cout << "2: Player housing wall" << endl;
 	cout << "3: Player housing roof" << endl;
-	cout << "4: Set player skin" << endl;
-	cout << "5: Set player hair" << endl; //Hair has a max of 6, any further messes up the character sprite
-	cout << "6: Set player color" << endl;
-	cout << "7: Set player outfit" << endl;
-	cout << "8: Set player style" << endl;
+	cout << "4: Set player skin" << endl;   //Skin has max of 2, any further messes up the character sprite
+	cout << "5: Set player hair" << endl;   //Hair has max of 6
+	cout << "6: Set player color" << endl;  //Color has max of 6
+	cout << "7: Set player outfit" << endl; //Outfit has max of 6
+	cout << "8: Set player style" << endl;  //Style has max of 7
 	
 	cin >> selection;
 	
