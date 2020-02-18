@@ -12,7 +12,7 @@
 #include <string>
 #include <cstring>
 #include <fstream>
-
+#include <map>
 
 //Import various libraries to interface with Windows functions (get working directory, get processes, etc)
 #include <windows.h>
@@ -30,6 +30,8 @@ using namespace std;
 
 // * * * GLOBAL VARIABLES * * *
 bool detectedsaves[2];
+
+//Initalize the map. More tags will be added throughout development.
 
 
 
@@ -415,12 +417,39 @@ void overwritePromptString(fstream &inputFile, string nameOfOldFile, string name
 	saveContent(inputFile, nameOfOldFile, nameOfTempFile, startPosition, newDataString, currentDataString);
 }
 
+
+short getInputLimit(string tag)
+{
+	//Create the maps that will hold tags with limits, and their respective max limits.
+	map<string,int> tags_with_limits;
+	map<string,int>::iterator it;
+	
+	tags_with_limits["\"hair\"\:"] = 6;
+	tags_with_limits["\"playerName\"\:"] = 10;
+	
+	it = tags_with_limits.find(tag);
+	
+	if (it == tags_with_limits.end())
+	{
+		cout << "No limit for tag found, proceeding as normal." << endl;
+		return -1;
+	}
+	else
+	{
+		cout << "Tag with limit found, enforcing limit on input. Limit: " << tags_with_limits[tag] << endl;
+		return tags_with_limits[tag];
+	}
+}
+
 void overwritePromptInt(fstream &inputFile, string nameOfOldFile, string nameOfTempFile, string tag)
 {
+	//Some tags have a max limit to their size. During input we need to enforce a limit as to how big input can be.
+	
 	string tagToFind = tag;
 	string currentDataString, newDataString;
 	char extractedByte;
 	int startPosition = seekStartingByte(inputFile, tagToFind)-1;
+	short inputLimit = getInputLimit(tag);
 	
 	inputFile.seekg(startPosition);
 	
@@ -437,6 +466,14 @@ void overwritePromptInt(fstream &inputFile, string nameOfOldFile, string nameOfT
 	cout << "Enter the new " << tag << " value: " << endl;
 	
 	cin >> newDataString;
+	
+	if (inputLimit != -1)
+	{
+		if (stoi(newDataString) > inputLimit )
+		{
+			cout << "Over limit!" << endl;
+		}
+	}
 	
 	newDataString.append("\,\"");
 	newDataString.insert(0,"\:");
@@ -835,9 +872,10 @@ void chooseSave(short detectedSaves)
 		//TODO: Verify that the streams were opened correctly, crash if not.
 		case 1:
 		{
-			if ((verify != 1) && (verify != 5) && (verify != 8)) 
+			if ((verify != 1) && (verify != 5) && (verify != 8) && (verify != 12))
 			{
 				Error.invalidSelection();
+				system("pause");
 			}
 			else
 			{
@@ -847,9 +885,10 @@ void chooseSave(short detectedSaves)
 			}
 		case 2: 
 		{
-			if ((verify != 4) && (verify != 5) && (verify != 11)) 
+			if ((verify != 4) && (verify != 5) && (verify != 11) && (verify != 12)) 
 			{
 				Error.invalidSelection();
+				system("pause");
 			}
 			else
 			{
@@ -860,15 +899,16 @@ void chooseSave(short detectedSaves)
 
 		case 3:
 		{
-			if ((verify != 7) && (verify != 8) && (verify != 11))
+			if ((verify != 7) && (verify != 8) && (verify != 12))
 			{
 				Error.invalidSelection();
+				system("pause");
 			}
 			openFileStream.open("games2.json");oldFileName = "games2.json";tempFileName = "games2.tmp";
 			break;
 		}
 		
-		default: {Error.invalidSelection();}
+		default: {Error.invalidSelection(); system("pause");}
 	}
 	
 	//Make sure a stream to the selected file is open. If not, throw an error.
