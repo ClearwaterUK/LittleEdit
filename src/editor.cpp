@@ -899,7 +899,7 @@ void chooseSave(short detectedSaves)
 
 		case 3:
 		{
-			if ((verify != 7) && (verify != 8) && (verify != 12))
+			if ((verify != 7) && (verify != 8) && (verify != 11) && (verify != 12))
 			{
 				Error.invalidSelection();
 				system("pause");
