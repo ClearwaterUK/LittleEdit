@@ -20,14 +20,14 @@ As the software is still in development, both the source code and the program it
 
 ## Setup
 
-Windows requirements: GNU  MINGW with GCC compilers, Git.
+Windows requirements: 
+#### Visual Studio 2019
+#### Visual C++ Redistributable for Visual Studio 2015
 
-Clone the repository in a command line, navigate to it and type the following: \
-```
-make -B
-```
+Clone the repository in a command line, navigate to it and double click on LittleEdit.sln to open the solution in Visual Studio.
+From there, click on Build -> Rebuild Solution.
 
-This will compile a fresh build of the program from the source code.
+This will compile a fresh build of the program from the source code, and drop the generated .exe in the release folder.
 
 Alternatively, visit the [release page](https://github.com/Clearwatersfo/LittleEdit/releases) for a pre-compiled executable.
 
