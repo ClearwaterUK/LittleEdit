@@ -17,10 +17,11 @@
 
 //Import various libraries to interface with Windows functions (get working directory, get processes, etc)
 #include <windows.h>
+#include <direct.h>
 
 #include <Lmcons.h>
 #include <tlhelp32.h>
-#include <unistd.h>
+#include <io.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -128,7 +129,7 @@ bool gameIsNotClosed()
     {
         while (Process32Next(snapshot, &entry) == TRUE)
         {
-            if (stricmp(entry.szExeFile, "Littlewood.exe") == 0)
+            if (_stricmp(entry.szExeFile, "Littlewood.exe") == 0)
             {  
                 HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
 
@@ -165,13 +166,14 @@ string getWorkingDir()
 bool checkWorkingDir(string workingdir)
 {
 	
-	short length = workingdir.length();
-	char lengthchar[length+1];
+	const short length = workingdir.length();
+	char* lengthchar = new char[length];
+
 	strcpy(lengthchar, workingdir.c_str());
 	
 	char buff[FILENAME_MAX]; //create string buffer to hold path
 	
-	if(chdir(lengthchar)) {return 1;}
+	if(_chdir(lengthchar)) {return 1;}
 	else {return 0;}
 
 }
@@ -321,10 +323,10 @@ int saveContent(fstream &inputFile, string nameOfOldFile, string nameOfTempFile,
 	
 	//Convert the string of the old file to a char array for renaming it later.
 	
-	char tempFileNameChar[nameOfTempFile.size()+1];
+	char* tempFileNameChar = new char[nameOfTempFile.size()+1];
 	strcpy(tempFileNameChar, nameOfTempFile.c_str());
 	
-	char oldFileNameChar[nameOfOldFile.size()+1];
+	char* oldFileNameChar = new char[nameOfOldFile.size()+1];
 	strcpy(oldFileNameChar, nameOfOldFile.c_str());
 	
 	//Create the temp file to write changes to.
@@ -392,7 +394,7 @@ void overwritePromptString(fstream &inputFile, string nameOfOldFile, string name
 {
 	string tagToFind = tag;
 	string currentDataString, newDataString;
-	char extractedByte;
+	char extractedByte = '\0';
 	
 	//Find the starting position of the data to be overwritten.
 	int startPosition = seekStartingByte(inputFile, tagToFind);
@@ -517,7 +519,7 @@ void overwritePromptInt(fstream &inputFile, string nameOfOldFile, string nameOfT
 	
 	string tagToFind = tag;
 	string currentDataString, newDataString;
-	char extractedByte;
+	char extractedByte = '\0';
 	int startPosition = seekStartingByte(inputFile, tagToFind)-1;
 	short inputLimit = getInputLimit(tag);
 	
@@ -687,9 +689,11 @@ void deleteGameBackupFile(string nameOfOldFile)
 	string nameOfBackupFile = nameOfOldFile;
 	nameOfBackupFile.insert(6,"BACKUP");
 	
-	char nameOfBackupFileChar[nameOfBackupFile.size() + 1];
+	const short length = nameOfBackupFile.length() + 1;
+	char* nameOfBackupFileChar = new char[length];
+
 	strcpy(nameOfBackupFileChar, nameOfBackupFile.c_str());
-	
+
 	cout << endl << "Deleting game-generated backup file..." << endl;
 	if (!remove(nameOfBackupFileChar))
 	{
