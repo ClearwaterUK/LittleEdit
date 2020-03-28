@@ -13,6 +13,7 @@
 #include <cstring>
 #include <sstream>
 #include <fstream>
+#include <vector>
 #include <map>
 
 //Import various libraries to interface with Windows functions (get working directory, get processes, etc)
@@ -351,7 +352,7 @@ int saveContent(fstream &inputFile, string nameOfOldFile, string nameOfTempFile,
 	if((currentByteLocation >= startByte) && !(alreadyWritten))
 	{
 		newFile << data;
-		
+
 		//Determine the offset of the stream seek.
 		
 		//First, convert both data to strings.
@@ -369,6 +370,9 @@ int saveContent(fstream &inputFile, string nameOfOldFile, string nameOfTempFile,
 	else
 	{
 		newFile << currentByte;
+		if (alreadyWritten)
+		{
+		}
 	}
 	}
 	cout << "Finished writing to file." << endl;
@@ -428,9 +432,9 @@ short getInputLimit(string tag)
 	//Create the maps that will hold tags with limits, and their respective max limits.
 	
 	tags_with_limits["\"skin\"\:"] = 3;
-	tags_with_limits["\"hair\"\:"] = 7;
-	tags_with_limits["\"color\"\:"] = 7;
-	tags_with_limits["\"outfit\"\:"] = 7;
+	tags_with_limits["\"hair\"\:"] = 11;
+	tags_with_limits["\"color\"\:"] = 8;
+	tags_with_limits["\"outfit\"\:"] = 12;
 	tags_with_limits["\"type\"\:"] = 8;
 	
 	tags_with_limits["\"playerName\"\:"] = 10;
@@ -470,6 +474,10 @@ bool checkTagPrompt(string tagToCheck)
 		cout << "5: Fuzz" << endl;
 		cout << "6: Ponytail" << endl;
 		cout << "7: Smooth" << endl;
+		cout << "8: Spiky" << endl;
+		cout << "9: Column" << endl;
+		cout << "10: Rolls" << endl;
+		cout << "11: Hawk" << endl;
 		return 1;
 	}
 	else if (tagToCheck == "\"color\"\:")
@@ -482,6 +490,7 @@ bool checkTagPrompt(string tagToCheck)
 		cout << "5: Ocean" << endl;
 		cout << "6: Emerald" << endl;
 		cout << "7: Bubblegum" << endl;
+		cout << "8: Pearl" << endl;
 		return 1;
 	}
 	else if (tagToCheck == "\"outfit\"\:")
@@ -494,6 +503,11 @@ bool checkTagPrompt(string tagToCheck)
 		cout << "5: Lilac" << endl;
 		cout << "6: Adventurer" << endl;
 		cout << "7: Peasant" << endl;
+		cout << "8: Mustard" << endl;
+		cout << "9: Neon" << endl;
+		cout << "10: Cream Robe" << endl;
+		cout << "11: Blush Robe" << endl;
+		cout << "12: Sky Robe" << endl;
 		return 1;
 	}
 	else if (tagToCheck == "\"type\"\:")
@@ -561,12 +575,192 @@ void overwritePromptInt(fstream &inputFile, string nameOfOldFile, string nameOfT
 		newDataString = strstream.str();
 		
 	}
-	
+
 	newDataString.append("\,\"");
-	newDataString.insert(0,"\:");
-	
+	newDataString.insert(0, "\:");
+
 	saveContent(inputFile, nameOfOldFile, nameOfTempFile, startPosition, newDataString, currentDataString);
 
+}
+
+
+
+void overwritePromptBoolArray(fstream& inputFile, string nameOfOldFile, string nameOfTempFile, string tag)
+{
+	// ELEMENTS ARE SEPERATED BY COMMAS INSIDE AN ARRAY
+
+
+	// First thing we need to do is get the array as a string.
+
+	string tagToFind = tag;
+	string currentDataBool, newDataBool;
+	char extractedByte = '\0';
+	int startPosition = seekStartingByte(inputFile, tagToFind) - 1;
+
+	inputFile.seekg(startPosition);
+	cout << "Starting byte: " << startPosition << endl;
+	system("pause");
+
+	while (extractedByte != ']')
+	{
+		inputFile.get(extractedByte);
+		currentDataBool += extractedByte;
+	}
+
+	cout << "Raw array data: " << currentDataBool << endl;
+	string tempDataBool = currentDataBool;
+
+	//Next, get the amount of elements from it.
+	//While we're at it, convert the elements in the table from string (true, false) to number (1,0).
+
+	int amountOfElements = 0;
+	short byteToStart;
+
+	for (short a = 0; a < currentDataBool.length(); a++)
+	{
+		if (currentDataBool.find("false", a) < currentDataBool.length())
+		{
+			byteToStart = currentDataBool.find("false", a);
+			currentDataBool.replace(byteToStart, 5, "0");
+			amountOfElements++;
+		}
+	}
+
+	for (short a = 0; a < currentDataBool.length(); a++)
+	{
+		if (currentDataBool.find("true", a) < currentDataBool.length())
+		{
+			byteToStart = currentDataBool.find("false", a);
+			currentDataBool.replace(a, 4, "1");
+			amountOfElements++;
+		}
+	}
+	cout << "Amount of elements inside array: " << amountOfElements << endl;
+	cout << "Array after modification: " << currentDataBool << endl;
+
+	//Now that we have the converted bool array, lookup the tag to find out what we're working with.
+	//This table will be updated as we add more tags to work with.
+
+	map<string, short> tagTable;
+	tagTable["\"whirlybugUsedToday\"\:"] = 1;
+	tagTable["\"cavernExplored\"\:"] = 2;
+
+	cout << tag << endl;
+	cout << tagTable.find("test")->second << endl;
+
+	//Store the keyvalue from the map in a variable.
+	short keyValue = tagTable.find(tag)->second;
+
+	//Prepare limit variables to be resized depending on the found tag.
+
+	vector<bool> dataArray;
+	dataArray.resize(amountOfElements);
+
+	switch (keyValue)
+	{
+		// If the keyValue is 0 then the key wasn't found, so something went wrong.
+		// Will make this into a thrown error later.
+	case 0: { cout << "Key not found. Something must have gone wrong." << endl; break; }
+	case 1: { cout << "whirlybugUsedToday" << endl; break; }
+	case 2: { cout << "cavernExplored" << endl; break; }
+
+	default: {break; }
+
+	}
+
+
+	for (short a = 1; a < currentDataBool.size(); a += 2)
+	{
+		short c = 0;
+		bool toAdd = 0;
+		cout << (short)currentDataBool[a] << endl;
+
+		if ((short)currentDataBool[a] == 48) {toAdd = 0;}
+		else if ((short)currentDataBool[a] == 49) {toAdd = 1;}
+
+		dataArray[c] = toAdd;
+
+	}
+
+	cout << "[";
+	for (short b = 0; b < dataArray.size(); b++)
+	{
+		cout << dataArray[b] << " ";
+	}
+	cout << "]";
+
+	// User modification of the bool arrray starts here.
+	// Set this to be a loop - while the user hasn't pressed a specific button to exit and confirm changes, the modification prompt continues.
+	// Exit key: 0 (zero)
+
+	while (true)
+	{
+		system("cls");
+		cout << "Currently modifying tag - " << tag << endl;
+		cout << "Tag size - " << amountOfElements << endl;
+
+		cout << "Current position values: " << endl;
+		for (short a = 0; a < amountOfElements; a++)
+		{
+			cout << (a+1) << " : " << dataArray[a] << endl;
+			
+		}
+
+		short selection;
+
+		cout << "Select a position to modify, or enter 0 to finish modifying and save the array." << endl;
+		cin >> selection;
+
+		if (selection > amountOfElements) { cout << "Selection is over tag size, ignoring selection."; }
+		else if (selection == 0) {break; }
+		else
+		{
+			cout << "Selected position: " << selection << endl;
+			cout << "Select a value to set (0: False, 1: True)" << endl;
+			bool newValue;
+			cin >> newValue;
+			if (newValue > 1)
+			{
+				cout << "Invalid value, cancelling modification." << endl;
+				system("pause");
+			}
+			else
+			{
+				dataArray[selection - 1] = newValue;
+			}
+
+		}
+	}
+	//Once the modifications have been made and the interface has been quit, convert the dataArray back into a string and save it into the file.
+
+	newDataBool = "";
+
+	//Convert the bools to strings...
+	for (short a = 0; a < amountOfElements; a++)
+	{
+		if (dataArray[a] == 0)
+		{
+			newDataBool.append("false");
+		}
+		else if (dataArray[a] == 1)
+		{
+			newDataBool.append("true");
+		}
+
+		if (a != amountOfElements-1)
+		{
+			cout << a << endl;
+			newDataBool.append(",");
+		}
+	}
+
+	// ...and pop on brackets at the start and end, and voilà we have our array ready to save.
+
+	newDataBool.insert(0, ":[");
+	newDataBool.append("],");
+
+	//Save the modified array into the file.
+	saveContent(inputFile, nameOfOldFile, nameOfTempFile,startPosition,newDataBool,tempDataBool);
 }
 
 void overwritePromptBool(fstream &inputFile, string nameOfOldFile, string nameOfTempFile, string tag)
@@ -873,6 +1067,7 @@ void saveModifyMainMenu(fstream &inputFile, string nameOfOldFile, string nameOfT
 	cout << "3: Inventory data" << endl;
 	cout << "4: Stats data" << endl;
 	cout << "5: Misc. data" << endl;
+	//cout << "6: Testing function for bool array (test with whirlybugUsedToday tag)" << endl;
 	cout << endl;
 	
 	cin >> selection;
@@ -885,6 +1080,7 @@ void saveModifyMainMenu(fstream &inputFile, string nameOfOldFile, string nameOfT
 		case 3: {saveModifyInventoryMenu(inputFile, nameOfOldFile, nameOfTempFile);break;}
 		case 4: {saveModifyStatsMenu(inputFile, nameOfOldFile, nameOfTempFile); break;}
 		case 5: {saveModifyMiscMenu(inputFile, nameOfOldFile, nameOfTempFile); break;}
+		case 6: {overwritePromptBoolArray(inputFile, nameOfOldFile, nameOfTempFile, "\"whirlybugUsedToday\"\:"); break; }
 		default: break;
 	}
 }
