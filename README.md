@@ -1,7 +1,6 @@
-# IMPORTANT: This readme is currently incomplete and will be subject to change.
 
 # LittleEdit
-A save editor for Littlewood. Currently in development.
+A save editor for Littlewood.
 
 https://github.com/Clearwatersfo/LittleEdit/ \
 https://store.steampowered.com/app/894940/Littlewood/
@@ -13,10 +12,8 @@ With this, you can change or modify variables in the save files to tweak items a
 
 ## Current status
 
-LittleEdit is currently in active, part-time development.
-The current build is compatible with Littlewood v0.9.
-
-As the software is still in development, both the source code and the program itself is subject to major changes.
+Due to a lack of interest and other commitments, LittleEdit is no longer actively developed.
+The source code will remain available for viewing.
 
 ## Setup
 
